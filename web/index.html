@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="description"
+    content="Check whether text messages look like spam with MessageGuard."
+  >
+  <title>MessageGuard — Spam Detector</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+
+<body>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="MessageGuard home">
+      <span class="brand-mark" aria-hidden="true">✦</span>
+      <span>MessageGuard</span>
+    </a>
+    <span class="header-label">TEXT SECURITY</span>
+  </header>
+
+  <main class="page-shell">
+    <section class="hero" aria-labelledby="page-title">
+      <p class="eyebrow">AI-POWERED MESSAGE SCREENING</p>
+      <h1 id="page-title">
+        A smarter way to<br>
+        <span>check suspicious messages.</span>
+      </h1>
+      <p class="hero-copy">
+        Check one message or analyze a CSV file containing multiple messages.
+      </p>
+    </section>
+
+    <section
+      id="auth-card"
+      class="analyzer-card auth-card"
+      aria-labelledby="account-title"
+    >
+      <div class="card-heading">
+        <div>
+          <p class="section-kicker">YOUR ACCOUNT</p>
+          <h2 id="account-title">Sign in or create an account</h2>
+        </div>
+        <span id="account-status" class="status-badge">Checking account...</span>
+      </div>
+
+      <div id="signed-in-panel" hidden>
+        <p id="signed-in-message" class="batch-status"></p>
+        <button id="signout-button" class="secondary-button" type="button">
+          Sign out
+        </button>
+      </div>
+
+      <div id="auth-forms" class="auth-grid">
+        <div class="auth-form">
+          <form id="signin-form">
+            <h3>Sign in</h3>
+
+            <label for="signin-email">Email</label>
+            <input
+              id="signin-email"
+              type="email"
+              autocomplete="email"
+              maxlength="320"
+              required
+            >
+
+            <label for="signin-password">Password</label>
+            <input
+              id="signin-password"
+              type="password"
+              autocomplete="current-password"
+              minlength="8"
+              maxlength="128"
+              required
+            >
+
+            <button type="submit">
+              <span>Continue to sign in</span>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <p
+              id="signin-status"
+              class="batch-status"
+              role="status"
+              aria-live="polite"
+            ></p>
+          </form>
+
+          <form id="signin-otp-form" hidden>
+            <h3>Verify sign in</h3>
+            <p class="auth-hint">Enter the 6-digit code sent to your email.</p>
+
+            <label for="signin-otp">Email verification code</label>
+            <input
+              id="signin-otp"
+              type="text"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              pattern="[0-9]{6}"
+              minlength="6"
+              maxlength="6"
+              placeholder="123456"
+              required
+            >
+
+            <button type="submit">
+              <span>Verify and sign in</span>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button id="signin-otp-back" class="secondary-button" type="button">
+              Back
+            </button>
+
+            <p
+              id="signin-otp-status"
+              class="batch-status"
+              role="status"
+              aria-live="polite"
+            ></p>
+          </form>
+        </div>
+
+        <div class="auth-form">
+          <form id="signup-form">
+            <h3>Create account</h3>
+
+            <label for="signup-email">Email</label>
+            <input
+              id="signup-email"
+              type="email"
+              autocomplete="email"
+              maxlength="320"
+              required
+            >
+
+            <label for="signup-password">Password</label>
+            <input
+              id="signup-password"
+              type="password"
+              autocomplete="new-password"
+              minlength="8"
+              maxlength="128"
+              required
+            >
+
+            <p class="auth-hint">Use at least 8 characters.</p>
+
+            <button type="submit">
+              <span>Send verification code</span>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <p
+              id="signup-status"
+              class="batch-status"
+              role="status"
+              aria-live="polite"
+            ></p>
+          </form>
+
+          <form id="signup-otp-form" hidden>
+            <h3>Verify your email</h3>
+            <p class="auth-hint">Enter the 6-digit code sent to your email.</p>
+
+            <label for="signup-otp">Email verification code</label>
+            <input
+              id="signup-otp"
+              type="text"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              pattern="[0-9]{6}"
+              minlength="6"
+              maxlength="6"
+              placeholder="123456"
+              required
+            >
+
+            <button type="submit">
+              <span>Verify and create account</span>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button id="signup-otp-back" class="secondary-button" type="button">
+              Back
+            </button>
+
+            <p
+              id="signup-otp-status"
+              class="batch-status"
+              role="status"
+              aria-live="polite"
+            ></p>
+          </form>
+        </div>
+      </div>
+
+      <p class="auth-note">
+        Email verification is required to create an account and sign in.
+        Never share your verification code with anyone.
+      </p>
+    </section>
+
+    <section
+      id="detector-workspace"
+      class="workspace"
+      aria-label="Message spam checker"
+      hidden
+    >
+      <div class="analyzer-card">
+        <div class="card-heading">
+          <div>
+            <p class="section-kicker">MESSAGE ANALYZER</p>
+            <h2>Check one message</h2>
+          </div>
+          <span class="status-badge">
+            <span class="status-dot"></span> Ready
+          </span>
+        </div>
+
+        <form id="analyzer-form">
+          <label for="message-input">Message text</label>
+          <textarea
+            id="message-input"
+            name="message"
+            maxlength="5000"
+            placeholder="Paste the SMS or email text you want to check..."
+            required
+          ></textarea>
+
+          <div class="input-meta">
+            <span>Your text is analyzed for this prediction.</span>
+            <span id="character-count">0 / 5000</span>
+          </div>
+
+          <button id="analyze-button" type="submit">
+            <span>Analyze message</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </form>
+
+        <div id="result" class="result-panel" role="status" aria-live="polite" hidden>
+          <div class="result-topline">
+            <span id="result-icon" class="result-icon" aria-hidden="true"></span>
+            <div>
+              <p id="result-label" class="result-label"></p>
+              <p id="result-description" class="result-description"></p>
+            </div>
+          </div>
+
+          <div class="probability-row">
+            <span>Spam probability</span>
+            <strong id="spam-probability">—</strong>
+          </div>
+
+          <div
+            class="probability-track"
+            role="progressbar"
+            aria-label="Spam probability"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <span id="probability-bar"></span>
+          </div>
+
+          <div id="feedback-section" class="feedback-section" hidden>
+            <p class="feedback-title">Was this prediction incorrect?</p>
+
+            <form id="feedback-form">
+              <label for="correct-label">Choose the correct label</label>
+              <select id="correct-label" required>
+                <option value="">Select a label</option>
+                <option value="ham">Ham — legitimate message</option>
+                <option value="spam">Spam — unwanted message</option>
+              </select>
+
+              <label class="consent-label" for="feedback-consent">
+                <input id="feedback-consent" type="checkbox" required>
+                <span>
+                  I agree to share this message and its correct label
+                  to help improve the project.
+                </span>
+              </label>
+
+              <button id="submit-feedback" class="secondary-button" type="submit">
+                Submit feedback
+              </button>
+            </form>
+
+            <p
+              id="feedback-status"
+              class="batch-status"
+              role="status"
+              aria-live="polite"
+            ></p>
+          </div>
+        </div>
+      </div>
+
+      <aside class="info-card">
+        <div class="info-icon" aria-hidden="true">✳</div>
+        <p class="section-kicker">HOW IT WORKS</p>
+        <h2>Three simple steps</h2>
+
+        <ol class="steps-list">
+          <li><span>01</span><p>Paste the message you received.</p></li>
+          <li><span>02</span><p>Our text classifier checks its patterns.</p></li>
+          <li><span>03</span><p>Review the result and probability.</p></li>
+        </ol>
+
+        <div class="privacy-note">
+          <span aria-hidden="true">ⓘ</span>
+          <p>
+            This is an educational demo. Predictions can be wrong,
+            especially for Hindi or long email messages.
+          </p>
+        </div>
+      </aside>
+    </section>
+
+    <section
+      id="batch-section"
+      class="analyzer-card batch-card"
+      aria-labelledby="batch-title"
+      hidden
+    >
+      <div class="card-heading">
+        <div>
+          <p class="section-kicker">BULK ANALYSIS</p>
+          <h2 id="batch-title">Check messages from a CSV</h2>
+        </div>
+      </div>
+
+      <p class="batch-description">
+        Upload a CSV file with a column named <code>text</code>.
+        Each row should contain one message.
+      </p>
+
+      <form id="batch-form">
+        <label for="csv-input">Choose a CSV file</label>
+        <input id="csv-input" type="file" accept=".csv,text/csv" required>
+
+        <button id="batch-button" type="submit">
+          <span>Analyze CSV</span>
+          <span aria-hidden="true">→</span>
+        </button>
+      </form>
+
+      <p id="batch-status" class="batch-status" role="status" aria-live="polite"></p>
+
+      <div id="batch-results" class="batch-results" hidden>
+        <div class="batch-results-heading">
+          <h3>Analysis results</h3>
+          <button id="download-results" class="secondary-button" type="button">
+            Download results
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Message</th>
+                <th>Prediction</th>
+                <th>Spam probability</th>
+              </tr>
+            </thead>
+            <tbody id="batch-results-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="history-section"
+      class="analyzer-card batch-card"
+      aria-labelledby="history-title"
+      hidden
+    >
+      <div class="batch-results-heading">
+        <div>
+          <p class="section-kicker">RECENT ACTIVITY</p>
+          <h2 id="history-title">Prediction history</h2>
+        </div>
+        <button id="clear-history" class="secondary-button" type="button">
+          Clear history
+        </button>
+      </div>
+
+      <p id="history-empty" class="batch-status">
+        Your recent checks will appear here.
+      </p>
+
+      <div id="history-container" class="table-wrap" hidden>
+        <table>
+          <thead>
+            <tr>
+              <th>Message</th>
+              <th>Prediction</th>
+              <th>Spam probability</th>
+              <th>Time checked</th>
+            </tr>
+          </thead>
+          <tbody id="history-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section
+      id="metrics-section"
+      class="analyzer-card batch-card"
+      aria-labelledby="metrics-title"
+      hidden
+    >
+      <div class="card-heading">
+        <div>
+          <p class="section-kicker">MODEL QUALITY</p>
+          <h2 id="metrics-title">Performance dashboard</h2>
+        </div>
+      </div>
+
+      <p class="batch-description">
+        Scores come from a held-out test set. They describe this dataset
+        and do not guarantee the result for an individual message.
+      </p>
+
+      <p
+        id="metrics-status"
+        class="batch-status"
+        role="status"
+        aria-live="polite"
+      >
+        Loading model metrics...
+      </p>
+
+      <div id="metrics-content" hidden>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <span>Test accuracy</span>
+            <strong id="metric-accuracy">—</strong>
+          </div>
+          <div class="metric-card">
+            <span>Spam precision</span>
+            <strong id="metric-precision">—</strong>
+          </div>
+          <div class="metric-card">
+            <span>Spam recall</span>
+            <strong id="metric-recall">—</strong>
+          </div>
+          <div class="metric-card">
+            <span>Spam F1 score</span>
+            <strong id="metric-f1">—</strong>
+          </div>
+        </div>
+
+        <div class="metrics-details">
+          <p>Dataset messages: <strong id="metric-dataset-size">—</strong></p>
+          <p>Training messages: <strong id="metric-training-size">—</strong></p>
+          <p>Test messages: <strong id="metric-test-size">—</strong></p>
+        </div>
+
+        <h3 class="matrix-title">Confusion matrix</h3>
+        <p class="matrix-caption">
+          Rows are actual labels; columns are predicted labels.
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Actual / Predicted</th>
+                <th>Ham</th>
+                <th>Spam</th>
+              </tr>
+            </thead>
+            <tbody id="confusion-matrix-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <span>MessageGuard</span>
+      <span>Machine-learning project · SMS Spam Collection</span>
+    </footer>
+  </main>
+</body>
+</html>

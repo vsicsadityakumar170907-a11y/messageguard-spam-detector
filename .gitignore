@@ -1,0 +1,27 @@
+# Python virtual environment
+.venv/
+venv/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Private settings and secrets
+.env
+.env.*
+!.env.example
+.secret_key
+.streamlit/secrets.toml
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Downloaded datasets and private user feedback
+data/
+feedback/
+
+# Operating system files
+.DS_Store
+Thumbs.db

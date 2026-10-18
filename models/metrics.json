@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-10-18T02:50:23.635399+00:00",
+  "dataset_messages": 7142,
+  "training_messages": 5713,
+  "test_messages": 1429,
+  "accuracy": 0.9818054583624912,
+  "spam_precision": 0.9548192771084337,
+  "spam_recall": 0.9664634146341463,
+  "spam_f1": 0.9606060606060606,
+  "confusion_matrix": [
+    [
+      1086,
+      15
+    ],
+    [
+      11,
+      317
+    ]
+  ],
+  "confusion_matrix_labels": [
+    "ham",
+    "spam"
+  ],
+  "classification_report": {
+    "ham": {
+      "precision": 0.9899726526891522,
+      "recall": 0.9863760217983651,
+      "f1-score": 0.9881710646041856,
+      "support": 1101.0
+    },
+    "spam": {
+      "precision": 0.9548192771084337,
+      "recall": 0.9664634146341463,
+      "f1-score": 0.9606060606060606,
+      "support": 328.0
+    },
+    "accuracy": 0.9818054583624912,
+    "macro avg": {
+      "precision": 0.972395964898793,
+      "recall": 0.9764197182162557,
+      "f1-score": 0.9743885626051231,
+      "support": 1429.0
+    },
+    "weighted avg": {
+      "precision": 0.9819038582941378,
+      "recall": 0.9818054583624912,
+      "f1-score": 0.9818440377942591,
+      "support": 1429.0
+    }
+  }
+}
